@@ -1,8 +1,8 @@
-def letters_to_numbers(num, list):
+def letters_to_numbers(num, listInput):
     if ord(num) <= 97:
-        list.append(ord(num) - 38)
+        listInput.append(ord(num) - 38)
     else:
-        list.append(ord(num) - 96)
+        listInput.append(ord(num) - 96)
 
 
 class Rucksack(str):
