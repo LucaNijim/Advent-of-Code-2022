@@ -50,5 +50,6 @@ for x in day2inputlines: sum += RockPaperScissorsMatch(x).score[0]
 print('Score for round 1: ' + str(sum))
 
 sum = 0
-for x in day2inputlines: sum += RockPaperScissorsMatch(x).score[1]
+for x in day2inputlines:
+    sum += RockPaperScissorsMatch(x).score[1]
 print('Score for round 2: ' + str(sum))
