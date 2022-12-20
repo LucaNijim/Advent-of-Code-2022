@@ -1,5 +1,5 @@
 class Instruction(str):
-    def __init__(self, str):
+    def __init__(self, string):
         self.quantity, self.target, self.destination = [int(x) for x in self.replace('move ', '').replace('from ', '').replace('to ', '').replace('\n', '').split(' ')]
 
 
@@ -35,38 +35,43 @@ class BoxState():
         self.list_of_stacks[target] = self.list_of_stacks[target][0:-quantity]
 
 
-practice = False
-if practice:
-    target_string = 'day5practiceinput.txt'
-else:
-    target_string = 'day5input.txt'
-input_lines = open(target_string).readlines()
-
-start_state_pt1, start_state_pt2, instruction_list = [], [], []
-targ_list = (start_state_pt1, start_state_pt2)
-
-for line in input_lines:
-    if line == '\n':
-        targ_list = instruction_list
+def main():
+    practice = False
+    if practice:
+        target_string = 'day5practiceinput.txt'
     else:
-        if type(targ_list) == tuple:
-            for x in targ_list:
-                x.append(line)
+        target_string = 'day5input.txt'
+    input_lines = open(target_string).readlines()
+
+    start_state_pt1, start_state_pt2, instruction_list = [], [], []
+    targ_list = (start_state_pt1, start_state_pt2)
+
+    for line in input_lines:
+        if line == '\n':
+            targ_list = instruction_list
         else:
-            targ_list.append(line)
+            if type(targ_list) == tuple:
+                for x in targ_list:
+                    x.append(line)
+            else:
+                targ_list.append(line)
 
-instruction_list = [Instruction(x) for x in instruction_list]
-start_state_pt1 = BoxState(start_state_pt1)
-start_state_pt2 = BoxState(start_state_pt2)
-for line in targ_list:
-    line = Instruction(line)
-    start_state_pt1.Operation(line.quantity, line.target-1, line.destination-1)
-    start_state_pt2.Day2Operation(line.quantity, line.target - 1, line.destination - 1)
+    instruction_list = [Instruction(x) for x in instruction_list]
+    start_state_pt1 = BoxState(start_state_pt1)
+    start_state_pt2 = BoxState(start_state_pt2)
+    for line in targ_list:
+        line = Instruction(line)
+        start_state_pt1.Operation(line.quantity, line.target - 1, line.destination - 1)
+        start_state_pt2.Day2Operation(line.quantity, line.target - 1, line.destination - 1)
 
-day_1_submit_string = ''
-day_2_submit_string = ''
-for stack in start_state_pt1.list_of_stacks:
-    day_1_submit_string += stack[-1]
-for stack in start_state_pt2.list_of_stacks:
-    day_2_submit_string += stack[-1]
-print(day_1_submit_string + '\n' + day_2_submit_string)
+    day_1_submit_string = ''
+    day_2_submit_string = ''
+    for stack in start_state_pt1.list_of_stacks:
+        day_1_submit_string += stack[-1]
+    for stack in start_state_pt2.list_of_stacks:
+        day_2_submit_string += stack[-1]
+    print(day_1_submit_string + '\n' + day_2_submit_string)
+
+
+if __name__ == '__main__':
+    main()

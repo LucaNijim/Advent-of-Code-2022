@@ -1,6 +1,6 @@
 def processData(text_list):
     isInHere = ['/']
-    folder_dictionary = {'/': 0,}
+    folder_dictionary = {'/': 0, }
     for command in text_list:
         if command[0:4] == '$ cd':
             if command == '$ cd ..\n':
@@ -9,9 +9,9 @@ def processData(text_list):
                 pass
             else:
                 depth = len(isInHere)
-                if depth>0:
-                    folder_dictionary[command[5:-1]+'_'+isInHere[-1]] = 0
-                    isInHere.append(command[5:-1]+'_'+isInHere[-1])
+                if depth > 0:
+                    folder_dictionary[command[5:-1] + '_' + isInHere[-1]] = 0
+                    isInHere.append(command[5:-1] + '_' + isInHere[-1])
                 else:
                     folder_dictionary[command[5:-1]] = 0
                     isInHere.append(command[5:-1])
@@ -34,13 +34,18 @@ class Filesystem:
         return sumvar
 
 
-input_text = Filesystem(open('day7input.txt').readlines())
+def main():
+    input_text = Filesystem(open('day7input.txt').readlines())
 
-print(input_text.sub100k())
+    print(input_text.sub100k())
 
-space_needed = 30000000-(70000000-input_text.datadict['/'])
-directory_to_delete = '/'
-for directory in input_text.datadict:
-    if input_text.datadict[directory] > space_needed and input_text.datadict[directory] < input_text.datadict[directory_to_delete]:
-        directory_to_delete = directory
-print(input_text.datadict[directory_to_delete])
+    space_needed = 30000000 - (70000000 - input_text.datadict['/'])
+    directory_to_delete = '/'
+    for directory in input_text.datadict:
+        if space_needed < input_text.datadict[directory] < input_text.datadict[directory_to_delete]:
+            directory_to_delete = directory
+    print(input_text.datadict[directory_to_delete])
+
+
+if __name__ == '__main__':
+    main()

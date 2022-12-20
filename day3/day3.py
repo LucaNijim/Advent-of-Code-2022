@@ -23,21 +23,24 @@ def priority_group(list_of_strings):
     return sum(chars_in_common)
 
 
-day3input_lines = open('day3input.txt').readlines()
+def main():
+    day3input_lines = open('day3input.txt').readlines()
 
-print(day3input_lines[0])
+    # for part 1
+    sum_vals = 0
+    for x in day3input_lines:
+        sum_vals += Rucksack(x).priority()
+    print(sum_vals)
 
-# for part 1
-sum_vals = 0
-for x in day3input_lines:
-    sum_vals += Rucksack(x).priority()
-print(sum_vals)
+    # for part 2
+    sum_vals = 0
+    for z in range(len(day3input_lines) // 3):
+        sum_vals += priority_group(day3input_lines[3 * z:3 * z + 3])
+    print(sum_vals)
 
-# for part 2
-sum_vals = 0
-for z in range(len(day3input_lines) // 3):
-    sum_vals += priority_group(day3input_lines[3 * z:3 * z + 3])
-print(sum_vals)
+
+if __name__ == '__main__':
+    main()
 
 # Maybe classes would have worked better! Big lesson learned:
 # It's strictly less than for the upper bound of a slice.

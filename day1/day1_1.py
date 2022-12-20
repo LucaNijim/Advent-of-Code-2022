@@ -12,13 +12,17 @@ def countCalories(list):
             elfsums[-1] += int(val[:-1])
     return elfsums
 
-caloriesPerElf=countCalories(input_lines)
+def main():
+    caloriesPerElf = countCalories(input_lines)
 
-top3= {0, 1, 2}
-for elf in caloriesPerElf:
-    if elf>min(top3):
-        top3.add(elf)
-        top3.remove(min(top3))
+    top3 = {0, 1, 2}
+    for elf in caloriesPerElf:
+        if elf > min(top3):
+            top3.add(elf)
+            top3.remove(min(top3))
 
-print(max(top3))
-print(sum(top3))
+    print(max(top3))
+    print(sum(top3))
+
+if __name__ == '__main__':
+    main()

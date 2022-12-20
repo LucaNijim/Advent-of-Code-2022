@@ -2,7 +2,6 @@ class Tail:
     def __init__(self, tail=False):
         self.position = [0, 0]
         self.trail = [(0, 0)]
-        print(tail)
         self.tail = tail
 
 
@@ -46,20 +45,25 @@ class Head:
             self.tail.update_position(self.position)
 
 
-text_input = open('day9input.txt').readlines()
+def main():
+    text_input = open('day9input.txt').readlines()
 
-tail9 = Tail()
-tail8 = Tail(tail9)
-tail7 = Tail(tail8)
-tail6 = Tail(tail7)
-tail5 = Tail(tail6)
-tail4 = Tail(tail5)
-tail3 = Tail(tail4)
-tail2 = Tail(tail3)
-tail1 = Tail(tail2)
-head = Head(tail1)
+    tail9 = Tail()
+    tail8 = Tail(tail9)
+    tail7 = Tail(tail8)
+    tail6 = Tail(tail7)
+    tail5 = Tail(tail6)
+    tail4 = Tail(tail5)
+    tail3 = Tail(tail4)
+    tail2 = Tail(tail3)
+    tail1 = Tail(tail2)
+    head = Head(tail1)
 
-for line in text_input:
-    head.command(line)
+    for line in text_input:
+        head.command(line)
 
-print(len(set(tail9.trail)))
+    print(len(set(tail9.trail)))
+
+
+if __name__ == '__main__':
+    main()

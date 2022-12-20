@@ -55,7 +55,8 @@ class SensorField:
         for item in boundary_overlap:
             bool_list = []
             for sensor in self.sensor_locations:
-                if taxicab_distance([item[0], item[1], sensor[0], sensor[1]]) > self.sensors_distances[sensor] and 0 <= item[0] <= 4000000 and 0 <= item[1] <= 4000000:
+                if taxicab_distance([item[0], item[1], sensor[0], sensor[1]]) > self.sensors_distances[sensor] and \
+                        0 <= item[0] <= 4000000 and 0 <= item[1] <= 4000000:
                     bool_list.append(True)
                 else:
                     bool_list.append(False)
@@ -63,6 +64,11 @@ class SensorField:
                 return item[0]*4000000+item[1]
 
 
-ourField = SensorField('day15input.txt')
-print(ourField.print_sum(2000000))
-print(ourField.find_mine())
+def main():
+    our_field = SensorField('day15input.txt')
+    print(our_field.print_sum(2000000))
+    print(our_field.find_mine())
+
+
+if __name__ == '__main__':
+    main()

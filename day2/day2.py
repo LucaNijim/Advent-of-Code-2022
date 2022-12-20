@@ -43,13 +43,18 @@ class RockPaperScissorsMatch(str):
         return p_3 + ((p_3 - p_1 + 1) % 3 ) * 3, p_2 + ((p_2 - p_1 + 1) % 3 ) * 3
 
 
-day2inputlines = open('day2input.txt').readlines()
+def main():
+    day2inputlines = open('day2input.txt').readlines()
 
-sum = 0
-for x in day2inputlines: sum += RockPaperScissorsMatch(x).score[0]
-print('Score for round 1: ' + str(sum))
+    sum = 0
+    for x in day2inputlines: sum += RockPaperScissorsMatch(x).score[0]
+    print('Score for round 1: ' + str(sum))
 
-sum = 0
-for x in day2inputlines:
-    sum += RockPaperScissorsMatch(x).score[1]
-print('Score for round 2: ' + str(sum))
+    sum = 0
+    for x in day2inputlines:
+        sum += RockPaperScissorsMatch(x).score[1]
+    print('Score for round 2: ' + str(sum))
+
+
+if __name__ == '__main__':
+    main()

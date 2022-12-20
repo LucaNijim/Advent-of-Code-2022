@@ -27,11 +27,16 @@ class CathodeRayTube:
                 self.addx(int(command[1]))
 
 
-CRT = CathodeRayTube()
-CRT.execute('day10input.txt')
-print(CRT.signal)
-screen_string = ''
-for line in CRT.screen:
-    screen_string += line
-    screen_string += '\n'
-print(screen_string)
+def main():
+    crt = CathodeRayTube()
+    crt.execute('day10input.txt')
+    print(crt.signal)
+    screen_string = ''
+    for line in crt.screen:
+        screen_string += line
+        screen_string += '\n'
+    print(screen_string)
+
+
+if __name__ == '__main__':
+    main()

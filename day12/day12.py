@@ -69,6 +69,11 @@ class HeightMap:
         self.nearest_a = a_distances[0]
 
 
-height_map = HeightMap('day12input.txt')
-print(height_map.shortest_path)
-print(height_map.nearest_a)
+def main():
+    height_map = HeightMap('day12input.txt')
+    print(height_map.shortest_path)
+    print(height_map.nearest_a)
+
+
+if __name__ == '__main__':
+    main()

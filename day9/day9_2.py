@@ -37,17 +37,20 @@ class RopeKnot:
             pass
 
 
-finalTail = RopeKnot
-rope = [finalTail]
-for x in range(10):
-    rope.append(RopeKnot(rope[-1]))
+def main():
+    finalTail = RopeKnot
+    rope = [finalTail]
+    for x in range(10):
+        rope.append(RopeKnot(rope[-1]))
+
+    input_lines = open('day9input.txt').readlines()
+
+    for line in input_lines:
+        rope[-1].command(line)
+
+    print(len(set(rope[-2].trail)))
+    print(len(set(rope[1].trail)))
 
 
-input_lines = open('day9input.txt').readlines()
-
-
-for line in input_lines:
-    rope[-1].command(line)
-
-print(len(set(rope[-2].trail)))
-print(len(set(rope[1].trail)))
+if __name__ == '__main__':
+    main()

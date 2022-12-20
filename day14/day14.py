@@ -75,6 +75,11 @@ class SandGrain:
                 return self.position
 
 
-our_slice = CaveSlice('day14input.txt')
-print(our_slice.count_sand_grains)
-print(our_slice.count_sand_grains2)
+def main():
+    our_slice = CaveSlice('day14input.txt')
+    print(our_slice.count_sand_grains)
+    print(our_slice.count_sand_grains2)
+
+
+if __name__ == '__main__':
+    main()

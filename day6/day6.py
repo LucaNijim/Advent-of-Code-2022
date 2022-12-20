@@ -11,4 +11,9 @@ def locate_packet(string, n):
     return index + n
 
 
-print(str(locate_packet(input_string, 4)) + '\n' + str(locate_packet(input_string, 14)))
+def main():
+    print(str(locate_packet(input_string, 4)) + '\n' + str(locate_packet(input_string, 14)))
+
+
+if __name__ == '__main__':
+    main()

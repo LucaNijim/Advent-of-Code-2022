@@ -11,7 +11,6 @@ class Monkey:
         self.items_inspected = 0
         self.outgoing_mail = []
 
-
     def take_turn(self, mod_val):
         self.items_inspected += len(self.items)
         ret_list = []
@@ -58,10 +57,15 @@ class MonkeyPack:
             monkey.outgoing_mail = []
 
 
-monkey_in_middle = MonkeyPack('day11input.txt')
-for x in range(10000):
-    monkey_in_middle.take_turn()
+def main():
+    monkey_in_middle = MonkeyPack('day11input.txt')
+    for x in range(10000):
+        monkey_in_middle.take_turn()
 
-print([x.items_inspected for x in monkey_in_middle.monkeys])
-most_used_monkeys = sorted([x.items_inspected for x in monkey_in_middle.monkeys], reverse=True)
-print(most_used_monkeys[0]*most_used_monkeys[1])
+    print([x.items_inspected for x in monkey_in_middle.monkeys])
+    most_used_monkeys = sorted([x.items_inspected for x in monkey_in_middle.monkeys], reverse=True)
+    print(most_used_monkeys[0] * most_used_monkeys[1])
+
+
+if __name__ == '__main__':
+    main()
