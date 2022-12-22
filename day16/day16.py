@@ -48,7 +48,7 @@ class PipeNetwork:
         self.useful_valves = {x for x in self.valves if self.valve_flow_rates[x] > 0} | {'AA'}
         self.spg = floyd_warshall(self.connections, self.useful_valves)
 
-    def highest_flow(self, T, elephant=False):  # T is the max time
+    def highest_flow(self, t, elephant=False):  # T is the max time
         def add(queue, open_valves, cv, time_remaining, score):
             if time_remaining >= 0:
                 queue.append((open_valves, cv, time_remaining))
@@ -56,35 +56,58 @@ class PipeNetwork:
                     saved_max_score[(open_valves, cv, time_remaining)] = score
         # This function should return the highest possible flow
         q = deque()
-        q.append((frozenset({'AA'}), 'AA', T))
+        q.append((frozenset({'AA'}), 'AA', t))
         saved_max_score = defaultdict(lambda: 0)  # We store potential maxes for each state in the state space here
         # We will write states in as ({open valves}, current_valve, time_remaining) and assign them to an int score
-        while len(q) > 0:
+        while len(q) > 0:  # Inside this while loop, we queue through the state space
             current_state = q.popleft()
             # Get the next state, initialize these current values
             current_open, current_valve, current_time = current_state
             current_score = saved_max_score[(current_open, current_valve, current_time)]
-            if current_time > 0:
+            if current_time > 0:  # We add the state of not moving anymore and just letting the score run out
                 add(q,
                     current_open,
                     current_valve,
                     0,
                     current_score + sum(
-                        {current_time * self.valve_flow_rates[open_valve] for open_valve in current_open}))
+                        {current_time * self.valve_flow_rates[open_valve]
+                         for open_valve in current_open}))
             for new_valve in self.useful_valves.difference(current_open):
+                # Here we add the state of moving to each possible valve
                 new_open = frozenset(current_open | {new_valve})
                 dist = self.spg[(current_valve, new_valve)] + 1
                 new_time = current_time - dist
-                new_score = current_score + sum({dist * self.valve_flow_rates[open_valve] for open_valve in current_open})
+                new_score = current_score + sum({dist * self.valve_flow_rates[open_valve]
+                                                 for open_valve in current_open})
                 add(q, new_open, new_valve, new_time, new_score)
-        return max(saved_max_score.values())
+        if elephant:
+            # If there's an element, we choose the max of the set of disjoint subsets
+            # Look at all sets of paths that don't open the same nodes and pick the highest
+            # It's pretty naive, but I wanted to move on to the next problem
+            max_scores = set()
+            keys_to_delete = set()
+            for key in saved_max_score.keys():
+                if key[2] > 0:
+                    keys_to_delete.add(key)
+            for key in keys_to_delete:
+                del saved_max_score[key]
+
+            for space_1, space_2 in permutations(saved_max_score.keys(), 2):
+                valves_opened_1 = space_1[0]
+                valves_opened_2 = space_2[0]
+                if valves_opened_1 & valves_opened_2 == {'AA'}:
+                    print(saved_max_score[space_1]+saved_max_score[space_2])
+                    max_scores.add(saved_max_score[space_1]+saved_max_score[space_2])
+            return max(max_scores)
+        else:
+            return max(saved_max_score.values())
 
 
 @timeit
 def main():
     our_network = PipeNetwork('day16input.txt')
-    print(our_network.highest_flow(30))
-    print(our_network.highest_flow(26, True))
+    # print(our_network.highest_flow(30))
+    print(our_network.highest_flow(26, elephant=True))
 
 
 if __name__ == '__main__':
