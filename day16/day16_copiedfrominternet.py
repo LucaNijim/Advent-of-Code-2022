@@ -90,6 +90,7 @@ def main():
         return best
 
     best1 = simulate(30)
+    print(best1.keys())
     print(max(best1.values()))
 
     best2 = simulate(26)
