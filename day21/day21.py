@@ -20,12 +20,12 @@ class MonkeyGroup:
             elif self.monkeys[monkey][1] == '*':
                 return eval_monkey(self.monkeys[monkey][0]) * eval_monkey(self.monkeys[monkey][2])
             elif self.monkeys[monkey][1] == '/':
-                return eval_monkey(self.monkeys[monkey][0]) / eval_monkey(self.monkeys[monkey][2])
+                return int(eval_monkey(self.monkeys[monkey][0]) / eval_monkey(self.monkeys[monkey][2]))
 
-        print(eval_monkey(self.monkeys['root'][2]))
+        print('Part 1 result: ' + str(eval_monkey('root')))
 
         def binary_search(dictionary, low, high, comp_val):
-            mid = floor((low+high)/2)
+            mid = floor((low + high) / 2)
             dictionary['humn'] = mid
             val = eval_monkey(dictionary['root'][0])
             if val == comp_val:
@@ -35,7 +35,7 @@ class MonkeyGroup:
             if val > comp_val:
                 return binary_search(dictionary, mid, high, comp_val)
 
-        print(binary_search(self.monkeys, 1, 10**15, eval_monkey(self.monkeys['root'][2])))
+        print('Part 2 result: '+str(binary_search(self.monkeys, 1, 10 ** 15, eval_monkey(self.monkeys['root'][2]))))
 
 
 def main():
