@@ -1,78 +1,91 @@
-from collections import defaultdict
+from collections import defaultdict, deque
+from itertools import permutations
+import time
 
 
-def luca_bfs(graph: dict, start_node):
-    visited_nodes = set()
-    queue = [start_node]
-    distance_from_start = defaultdict(lambda: float('inf'))
-    distance_from_start[start_node] = 0
-    while len(queue) > 0:
-        current_node = queue.pop(0)
-        visited_nodes.add(current_node)
-
-        for node in graph[current_node]:
-            if node in visited_nodes:
-                continue
-
-            new_distance = distance_from_start[current_node] + 1
-            if new_distance < distance_from_start[node]:
-                distance_from_start[node] = new_distance
-                queue.append(node)
-    return distance_from_start
+# I'm still trying to get a handle on decorators, this is a pretty straightforward one
+# We use it to decorate the main function, but we could also use it on any internal function, which is pretty handy
+def timeit(func):
+    def helper():
+        start_time = time.time()
+        func()
+        print('Time elapsed: '+str(time.time()-start_time))
+    return helper
 
 
-def all_possible_choices(graph: dict, start_node, length):
-    possible_paths = set((start_node,))
-    for i in range(length):
-        x = max([len(x) for x in possible_paths])
-        for path in {path for path in possible_paths if len(path) == x}:
-            if type(path) == str:
-                for new_node in graph[path] + (path,):
-                    possible_paths.add(tuple((path,) + (new_node,)))
-            else:
-                for new_node in graph[path[-1]] + (path[-1],):
-                    possible_paths.add(tuple(path)+(new_node,))
-    ret_val = {path for path in possible_paths if len(path) == length}
-    print(ret_val)
-    return ret_val
+# The floyd warshall algorithm is used to calculate the shortest path between every point in a graph.
+def floyd_warshall(graph, subset):
+    # spg stands for shortest path graph
+    spg = defaultdict(lambda: float('inf'))
+    for node in graph.keys():
+        spg[(node, node)] = 0
+        for new_node in graph[node]:
+            spg[(node, new_node)] = spg[(new_node, node)] = 1
+    for i, j, k in permutations(graph.keys(), 3):
+        if spg[(i, j)] + spg[(j, k)] < spg[(i, k)]:
+            spg[(i, k)] = spg[(k, i)] = spg[(i, j)] + spg[(j, k)]
+    return {x: spg[x] for x in spg.keys() if x[0] in subset and x[1] in subset}
 
 
+# We make this class PipeNetwork to represent the space of our problem
 class PipeNetwork:
     def __init__(self, file):
+        # Here, we initialize a list of valves, and dictionaries to represent the valve flow rates and valve connections
+        self.valves = set()
+        self.valve_flow_rates = {}
+        self.connections = {}
+
+        # We loop through each line of the file and appropriately update the three properties
         input_lines = open(file).readlines()
-        self.valve_names = [y.split(' ')[1] for y in input_lines]
-        self.valve_connections = dict.fromkeys(self.valve_names, None)
-        self.valve_flow_rates = dict.fromkeys(self.valve_names, None)
-        for index, line in enumerate(input_lines):
-            connections = line.split('to valve')[1].split(', ')
-            connections = tuple([x.strip('s \n') for x in connections])
-            self.valve_connections[self.valve_names[index]] = connections
+        for line in input_lines:
+            valve = line.split()[1]
+            self.valves.add(valve)
+            self.valve_flow_rates[valve] = int(line.split()[4].strip('rate=;'))
+            connected_valves = [x for x in line.split('valve')[1].strip('s \n').split(', ')]
+            self.connections[valve] = set(connected_valves)
 
-            flow_rate = int(line.split('=')[1].split(';')[0])
-            self.valve_flow_rates[self.valve_names[index]] = flow_rate
+        # The useful valves are the ones which have flow rates > 0
+        self.useful_valves = {x for x in self.valves if self.valve_flow_rates[x] > 0} | {'AA'}
+        self.spg = floyd_warshall(self.connections, self.useful_valves)
 
-        self.useful_valves = ['AA']
+    def highest_flow(self, T, elephant=False):  # T is the max time
+        def add(queue, open_valves, cv, time_remaining, score):
+            if time_remaining >= 0:
+                queue.append((open_valves, cv, time_remaining))
+                if saved_max_score[(open_valves, cv, time_remaining)] < score:
+                    saved_max_score[(open_valves, cv, time_remaining)] = score
+        # This function should return the highest possible flow
+        q = deque()
+        q.append((frozenset({'AA'}), 'AA', T))
+        saved_max_score = defaultdict(lambda: 0)  # We store potential maxes for each state in the state space here
+        # We will write states in as ({open valves}, current_valve, time_remaining) and assign them to an int score
+        while len(q) > 0:
+            current_state = q.popleft()
+            # Get the next state, initialize these current values
+            current_open, current_valve, current_time = current_state
+            current_score = saved_max_score[(current_open, current_valve, current_time)]
+            if current_time > 0:
+                add(q,
+                    current_open,
+                    current_valve,
+                    0,
+                    current_score + sum(
+                        {current_time * self.valve_flow_rates[open_valve] for open_valve in current_open}))
+            for new_valve in self.useful_valves.difference(current_open):
+                new_open = frozenset(current_open | {new_valve})
+                dist = self.spg[(current_valve, new_valve)] + 1
+                new_time = current_time - dist
+                new_score = current_score + sum({dist * self.valve_flow_rates[open_valve] for open_valve in current_open})
+                add(q, new_open, new_valve, new_time, new_score)
+        return max(saved_max_score.values())
 
-        for key in self.valve_flow_rates:
-            if self.valve_flow_rates[key] > 0:
-                self.useful_valves.append(key)
 
-        self.useful_distances = dict.fromkeys(self.useful_valves, None)
-
-        for key in self.useful_distances:
-            self.useful_distances[key] = luca_bfs(self.valve_connections, key)
-            unwanted_keys = set(self.valve_names) - set(self.useful_valves)
-            for unwanted_key in unwanted_keys:
-                del self.useful_distances[key][unwanted_key]
-
-        print(self.useful_distances)
-
-    def get_max_flow(self):
-        all_possible_games = all_possible_choices(self.valve_connections, 'AA', 30)
-        print(all_possible_games)
-        # what do we actually need to do here?
-        # First, we need to find every possible path of length 30 in the graph
-        # Then, we need a score function that takes a path as input, and returns the score
+@timeit
+def main():
+    our_network = PipeNetwork('day16input.txt')
+    print(our_network.highest_flow(30))
+    print(our_network.highest_flow(26, True))
 
 
-our_network = PipeNetwork('day16practiceinput.txt')
+if __name__ == '__main__':
+    main()
