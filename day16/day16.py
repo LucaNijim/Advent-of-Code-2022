@@ -96,7 +96,6 @@ class PipeNetwork:
                 valves_opened_1 = space_1[0]
                 valves_opened_2 = space_2[0]
                 if valves_opened_1 & valves_opened_2 == {'AA'}:
-                    print(saved_max_score[space_1]+saved_max_score[space_2])
                     max_scores.add(saved_max_score[space_1]+saved_max_score[space_2])
             return max(max_scores)
         else:
@@ -106,7 +105,7 @@ class PipeNetwork:
 @timeit
 def main():
     our_network = PipeNetwork('day16input.txt')
-    # print(our_network.highest_flow(30))
+    print(our_network.highest_flow(30))
     print(our_network.highest_flow(26, elephant=True))
 
 
