@@ -1,85 +1,85 @@
-import re
 from collections import deque
 from math import ceil
+import time
+
+
+def timeit(func):
+    def helper():
+        start_time = time.time()
+        func()
+        print('Time elapsed: '+str(time.time()-start_time))
+    return helper
+
+
+def comparison_func(cost, mat, prod):
+    if prod == 0:
+        return 0 if cost == 0 else float('inf')
+    return (ceil(max(0, cost - mat) / prod)) + 1
 
 
 class Blueprint:
     def __init__(self, string):
-        numbers = [x for x in [y.strip(':') for y in string.split()] if x.isnumeric()]
-        print(numbers)
-        self.index = int(numbers[0])
-        self.ore_bot_cost = int(numbers[1])
-        self.clay_bot_cost = int(numbers[2])
-        self.obsidian_bot_cost = tuple(int(x) for x in numbers[3:5])
-        self.geode_bot_cost = tuple(int(x) for x in numbers[4:])
-        print(self.obsidian_bot_cost)
+        numbers = [int(x) for x in [y.strip(':') for y in string.split()] if x.isdigit()]
+        self.index = numbers[0]
+        self.costs = ((numbers[1], 0, 0, 0),
+                      (numbers[2], 0, 0, 0),
+                      (numbers[3], numbers[4], 0, 0),
+                      (numbers[5], 0, numbers[6], 0))
+        self.max_costs = tuple(map(max, self.costs[0], self.costs[1], self.costs[2], self.costs[3]))
 
-        # The order for the inventory will be ore, clay, obsidian, geodes
-        # then ore bots, clay bots, obsidian bots, and geode bots.
+    def __str__(self):
+        return str(self.costs)
 
-        self.inventory = (0, 0, 0, 0, 1, 0, 0, 0)
-
-    def max_geodes(self, time):
+    def max_geodes(self, num):
         q = deque()
-        q.append(self.inventory + (time,))
-        memo = set()
+        q.append((((0, 0, 0, 0), (1, 0, 0, 0)), num))
+        memo = {}
+        geode_max_num = 0
         while q:
-            cs = q.popleft()  # cs is current state
-            if cs in memo:
-                print('memoed')
+            current_state = q.popleft()
+            if current_state[0] in memo.keys():
                 continue
-            memo.add(cs)
-            if cs[-1] > 0:
-                # This loop will only run if there's time left
-                ore_time = 1 + max(0, ceil((self.ore_bot_cost - cs[0]) / cs[4]))
+            memo.update({current_state[0]: current_state[1]})
+            times = []
+            for index, val in enumerate(self.costs):
+                if current_state[0][1][index] >= self.max_costs[index] and index != 3:
+                    continue
+                times.append(max(map(comparison_func, val, current_state[0][0], current_state[0][1])))
+                if times[-1] <= current_state[1]:
+                    new_mats = tuple(map(lambda mats, prod, cost: mats - cost + times[-1] * prod,
+                                         current_state[0][0], current_state[0][1], val))
+                    new_bots = list(current_state[0][1])
+                    new_bots[index] += 1
+                    if new_bots[index] >= self.max_costs[index] and index != 3:
+                        new_bots[index] == float('inf')
+                        new_mats[index] == float('inf')
+                    new_bots = tuple(new_bots)
 
-                q.append((cs[0] + ore_time * cs[4] - self.ore_bot_cost,
-                          cs[1] + ore_time * cs[5],
-                          cs[2] + ore_time * cs[6],
-                          cs[3] + ore_time * cs[7],
-                          cs[4] + 1, cs[5], cs[6], cs[7],
-                          cs[-1] - ore_time))
+                    new_time = current_state[1] - times[-1]
 
-                clay_time = 1 + max(0, ceil((self.clay_bot_cost - cs[0]) / cs[4]))
-                q.append((cs[0] + clay_time * cs[4] - self.clay_bot_cost,
-                          cs[1] + clay_time * cs[5],
-                          cs[2] + clay_time * cs[6],
-                          cs[3] + clay_time * cs[7],
-                          cs[4], cs[5] + 1, cs[6], cs[7],
-                          cs[-1] - clay_time))
-                if cs[5] > 0:
-                    obs_time = 1 + max(0, ceil((self.obsidian_bot_cost[0] - cs[0]) / cs[4]),
-                                       ceil((self.obsidian_bot_cost[1] - cs[1])) / cs[5])
-                    q.append((cs[0] + obs_time * cs[4] - self.obsidian_bot_cost[0],
-                              cs[1] + obs_time * cs[5] - self.obsidian_bot_cost[1],
-                              cs[2] + obs_time * cs[6],
-                              cs[3] + obs_time * cs[7],
-                              cs[4], cs[5], cs[6] + 1, cs[7],
-                              cs[-1] - obs_time))
-                if cs[6] > 0:
+                    q.append(((new_mats, new_bots), new_time))
+            if min(times) >= current_state[1]:
+                final_mats = tuple(map(lambda x, y: x + current_state[1]*y, current_state[0][0], current_state[0][1]))
+                final_geode = final_mats[-1]
+                memo.update({(final_mats, current_state[0][1]): 0})
+                if final_geode > geode_max_num:
+                    geode_max_num = final_geode
 
-                    geode_time = 1 + max(0, ceil((self.geode_bot_cost[0] - cs[0]) / cs[4]),
-                                         ceil((self.geode_bot_cost[1] - cs[2]) / cs[6]))
-
-                    q.append((cs[0] + geode_time * cs[4] - self.obsidian_bot_cost[0],
-                              cs[1] + geode_time * cs[5],
-                              cs[2] + geode_time * cs[6] - self.obsidian_bot_cost[1],
-                              cs[3] + geode_time * cs[7],
-                              cs[4], cs[5], cs[6], cs[7] + 1,
-                              cs[-1] - geode_time))
-        print(max(x[3] for x in memo))
+        return geode_max_num
 
 
+@timeit
 def main():
     blueprints = []
-    with open('day19practiceinput.txt') as f:
-        for line in f.readlines():
+    part1_number = 0
+    with open('day19input.txt') as file:
+        for line in file.readlines():
             blueprints.append(Blueprint(line))
-    blueprints[0].max_geodes(18)
-    # print('Part 1 result: ' + str(sum(x.index * x.max_geodes(24) for x in blueprints)))
+    my_list = [x.max_geodes(24)*x.index for x in blueprints]
+    print('Part 1 solution: ' + str(sum(my_list)))
+
+    print('Part 2 solution: ' + str(blueprints[0].max_geodes(32)*blueprints[1].max_geodes(32)*blueprints[2].max_geodes(32)))
 
 
 if __name__ == '__main__':
     main()
-
-# For part one, we need to print the sum of the product of a blueprint's index with its max score for 24

@@ -1,3 +1,17 @@
-Then, the grove coordinates can be found by looking at the 1000th, 2000th, and 3000th numbers after the value 0, wrapping around the list as necessary. In the above example, the 1000th number after 0 is 4, the 2000th is -3, and the 3000th is 2; adding these together produces 3.
+def main():
+    with open('day20practiceinput.txt') as file:
+        list_of_numbers = [int(x.strip('\n ')) for x in file.readlines()]
+    length = len(list_of_numbers)
+    list_of_indexes = list(range(length))
+    print(list_of_numbers)
+    print(list_of_indexes, '\n'*2)
 
-Mix your encrypted file exactly once. What is the sum of the three numbers that form the grove coordinates?
+    # Let's write out what's happening here.
+
+
+
+    # this wraps the list
+
+
+if __name__ == '__main__':
+    main()
