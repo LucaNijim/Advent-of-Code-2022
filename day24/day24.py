@@ -9,8 +9,8 @@ def bfs(board, start_pos, seek_pos):
     goals = deque([seek_pos, start_pos, seek_pos])
 
     locs = {0: {start_pos}}
-
-    for t in range(1, 1000000000000):
+    t = 1
+    while True:
         locs[t] = set()
         for px, py in ((x+dx, y+dy) for x, y in locs[t-1] for dx, dy in ((0, 0), (0, -1), (0, 1), (1, 0), (-1, 0))):
             if board[py][px] == '#':
@@ -31,6 +31,7 @@ def bfs(board, start_pos, seek_pos):
             goals.popleft()
             if not goals:
                 break
+        t += 1
 
 
 def main():
