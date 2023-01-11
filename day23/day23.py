@@ -41,7 +41,7 @@ def store(elfset, framenum):
     lines = ['' for _ in range(maxy-miny+1)]
     for ynum in range(miny, maxy+1):
         for xnum in range(minx, maxx+1):
-            lines[ynum-miny] += '#' if xnum+ynum*1j in elfset else '.'
+            lines[ynum-miny] += '#' if xnum+ynum*1j in elfset else ' '
         lines[ynum-miny] += '\n'
 
     lines.reverse()
