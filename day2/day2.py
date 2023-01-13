@@ -2,6 +2,7 @@ import numpy as np
 
 
 class RockPaperScissorsMatch(str):
+    """This is disgusting! Definitely shows how much I've grown over the last month!"""
     @property
     def score(self):
         p_1 = self[0]
@@ -13,13 +14,6 @@ class RockPaperScissorsMatch(str):
             p_2 = self[-i]
         p_2_possibilities = ['X', 'Y', 'Z']
 
-        #def stringtonumber(p: object, poss_list: object) -> object:
-        #    for i in np.arange(len(poss_list)):
-        #        if p == poss_list[i]:
-        #            p = int(i)
-
-        #p_1, p_2 = stringtonumber(p_1, p_1_possibilities), stringtonumber(p_2, p_2_possibilities)
-
         if p_1 == 'A':
             p_1 = 1
         if p_1 == 'B':
@@ -27,20 +21,20 @@ class RockPaperScissorsMatch(str):
         if p_1 == 'C':
             p_1 = 3
 
-        #Second Round:
+        # Second Round:
         if p_2 == 'X':
-            p_2 = (p_1-1) % 3
+            p_2 = (p_1 - 1) % 3
             p_3 = 1
         if p_2 == 'Y':
             p_2 = p_1 % 3
             p_3 = 2
         if p_2 == 'Z':
-            p_2 = (p_1+1) % 3
+            p_2 = (p_1 + 1) % 3
             p_3 = 3
         if p_2 == 0:
             p_2 = 3
 
-        return p_3 + ((p_3 - p_1 + 1) % 3 ) * 3, p_2 + ((p_2 - p_1 + 1) % 3 ) * 3
+        return p_3 + ((p_3 - p_1 + 1) % 3) * 3, p_2 + ((p_2 - p_1 + 1) % 3) * 3
 
 
 def main():

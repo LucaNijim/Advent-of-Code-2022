@@ -36,7 +36,7 @@ class BoxState():
 
 
 def main():
-    practice = False
+    practice = True
     if practice:
         target_string = 'day5practiceinput.txt'
     else:
@@ -70,7 +70,7 @@ def main():
         day_1_submit_string += stack[-1]
     for stack in start_state_pt2.list_of_stacks:
         day_2_submit_string += stack[-1]
-    print(day_1_submit_string + '\n' + day_2_submit_string)
+    print(f'Part 1 solution: {day_1_submit_string}\nPart 2 solution: {day_2_submit_string}')
 
 
 if __name__ == '__main__':

@@ -30,13 +30,13 @@ def main():
     sum_vals = 0
     for x in day3input_lines:
         sum_vals += Rucksack(x).priority()
-    print(sum_vals)
+    print(f'Part 1 solution: {sum_vals}')
 
     # for part 2
     sum_vals = 0
     for z in range(len(day3input_lines) // 3):
         sum_vals += priority_group(day3input_lines[3 * z:3 * z + 3])
-    print(sum_vals)
+    print(f'Part 1 solution: {sum_vals}')
 
 
 if __name__ == '__main__':

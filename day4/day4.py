@@ -37,7 +37,7 @@ def main():
             sum_day1 += 1
         if ElfRanges(y).overlaps_range():
             sum_day2 += 1
-    print(str(sum_day1) + '\n' + str(sum_day2))
+    print(f'Part 1 solution: {sum_day1}\nPart 2 solution: {sum_day2}')
 
 
 if __name__ == '__main__':
